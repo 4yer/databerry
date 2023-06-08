@@ -29,7 +29,7 @@ import { z } from 'zod';
 
 import useStateReducer from '@app/hooks/useStateReducer';
 import { getAgents } from '@app/pages/api/agents';
-import { getSlackIntegrations } from '@app/pages/api/integrations/slack/integrations';
+import { getCrispIntegrations } from '@app/pages/api/integrations/crisp/[agentId]';
 import { fetcher } from '@app/utils/swr-fetcher';
 
 type Props = {
@@ -40,32 +40,20 @@ type Props = {
 
 const Schema = z.object({ agentId: z.string().min(1) });
 
-export default function SlackBotSettingsModal(props: Props) {
+export default function CrispSettingsModal(props: Props) {
   const { data: session, status } = useSession();
   const [state, setState] = useStateReducer({
     isUpdateLoading: false,
     isDeleteLoading: false,
   });
   const router = useRouter();
-  const getSlackIntegrationsQuery = useSWR<
-    Prisma.PromiseReturnType<typeof getSlackIntegrations>
-  >(`/api/integrations/slack/integrations/${props.agentId}`, fetcher);
-
-  const getAgentsQuery = useSWR<Prisma.PromiseReturnType<typeof getAgents>>(
-    '/api/agents',
-    fetcher
-  );
+  const getCrispIntegrationsQuery = useSWR<
+    Prisma.PromiseReturnType<typeof getCrispIntegrations>
+  >(`/api/integrations/crisp/${props.agentId}`, fetcher);
 
   const onSubmit = () => {
     router.push(
-      `https://slack.com/oauth/v2/authorize?client_id=${
-        process.env.NEXT_PUBLIC_SLACK_CLIENT_ID
-      }&scope=app_mentions:read,channels:history,groups:history,chat:write,commands,users:read&redirect_uri=${
-        process.env.NEXT_PUBLIC_DASHBOARD_URL
-      }/api/integrations/slack/auth-callback&state=${JSON.stringify({
-        userId: session?.user.id,
-        agentId: props.agentId,
-      })}`
+      `https://app.crisp.chat/initiate/plugin/${process.env.NEXT_PUBLIC_CRISP_PLUGIN_ID}/`
     ),
       '_blank';
   };
@@ -73,12 +61,12 @@ export default function SlackBotSettingsModal(props: Props) {
   const handleDelete = async (id: string) => {
     try {
       setState({ isDeleteLoading: true });
-      await axios.delete(`/api/integrations/slack/integrations`, {
+      await axios.delete(`/api/integrations/crisp/${props.agentId}`, {
         data: {
           id,
         },
       });
-      getSlackIntegrationsQuery.mutate();
+      getCrispIntegrationsQuery.mutate();
     } catch (err) {
       console.log(err);
     } finally {
@@ -86,8 +74,7 @@ export default function SlackBotSettingsModal(props: Props) {
     }
   };
 
-  const isLoading =
-    getAgentsQuery.isLoading || getSlackIntegrationsQuery.isLoading;
+  const isLoading = getCrispIntegrationsQuery.isLoading;
 
   if (!props.agentId) {
     return null;
@@ -105,7 +92,7 @@ export default function SlackBotSettingsModal(props: Props) {
       }}
     >
       <Card sx={{ width: '100%', maxWidth: 400 }}>
-        <Typography level="h4">Slack Bot</Typography>
+        <Typography level="h4">Crisp</Typography>
         <Typography color="neutral" level="h6">
           Settings
         </Typography>
@@ -116,12 +103,12 @@ export default function SlackBotSettingsModal(props: Props) {
         ) : (
           <>
             <FormLabel>Active connections</FormLabel>
-            {getSlackIntegrationsQuery?.data?.length ? (
+            {getCrispIntegrationsQuery?.data?.length ? (
               <List>
-                {getSlackIntegrationsQuery.data?.map((each, index) => (
+                {getCrispIntegrationsQuery.data?.map((each, index) => (
                   <ListItem key={index}>
                     <Typography className="truncate">
-                      {(each?.metadata as any)?.team?.name ||
+                      {((each as any)?.metadata as any)?.domain ||
                         each.integrationId}
                     </Typography>
 
@@ -147,7 +134,7 @@ export default function SlackBotSettingsModal(props: Props) {
               </List>
             ) : (
               <Alert variant="outlined">
-                Not connected to any Slack workspace
+                Not connected to any Crisp website
               </Alert>
             )}
 
@@ -159,7 +146,7 @@ export default function SlackBotSettingsModal(props: Props) {
                   sx={{ mt: 4, ml: 'auto' }}
                   // disabled={!methods.formState.isValid}
                 >
-                  Connect to Slack
+                  Connect to Crisp
                 </Button>
               </Stack>
             </form>

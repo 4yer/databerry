@@ -46,4 +46,5 @@ packages/chat-bubble/chat-bubble*
 
 .pnpm-store/
 
+.dev/databerry/app.env
 .http
