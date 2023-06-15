@@ -1,0 +1,15 @@
+curl --location --request POST 'https://api.databerry.ai/agents/query/<agentId>' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer <API_KEY>' \
+--data-raw '{
+    "query": "Lorem Ipsum..."
+}'
+
+
+###
+POST http://localhost:3000/agents/query/clin8yngk0000u8uyggok0f4w
+Content-Type: application/json
+
+{
+    "query": "你是谁? 输出markdown格式的文本"
+}
