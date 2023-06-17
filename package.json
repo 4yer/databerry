@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:all": "npm-run-all --parallel dev worker:datasource-loader",
-    "build": "set NODE_OPTIONS=--max-old-space-size=4096 && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "build:widget:chat-bubble": "NEXT_PUBLIC_DASHBOARD_URL=https://app.databerry.ai npx parcel build widgets/chat-bubble.tsx",
