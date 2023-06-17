@@ -7,6 +7,7 @@ import { WorkerPro } from '@app/utils/bullmq-pro';
 import prisma from '@app/utils/prisma-client';
 import taskLoadDatasource from '@app/utils/task-load-datasource';
 
+console.log('redis connection string = ' + process.env.REDIS_URL!);
 const connection = new Redis(process.env.REDIS_URL!);
 
 const datasourceLoadQueue = new WorkerPro(
