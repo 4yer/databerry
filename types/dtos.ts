@@ -70,22 +70,18 @@ const SearchResultsSchema = z.array(
   })
 );
 
-export const SearchSimpleResponseSchema = z.object({
-  results: SearchResultsSchema,
-});
+export const SearchSimpleResponseSchema = SearchResultsSchema;
 
 export type SearchSimpleResponseSchema = z.infer<
   typeof SearchSimpleResponseSchema
 >;
 
-export const SearchResponseSchema = z.object({
-  results: z.array(
-    z.object({
-      query: z.string(),
-      results: SearchResultsSchema,
-    })
-  ),
-});
+export const SearchResponseSchema = z.array(
+  z.object({
+    query: z.string(),
+    results: SearchResultsSchema,
+  })
+);
 export type SearchResponseSchema = z.infer<typeof SearchResponseSchema>;
 
 export const UpsertRequestSchema = z.object({
@@ -152,17 +148,19 @@ export const UpsertAgentSchema = z.object({
 
 export type UpsertAgentSchema = z.infer<typeof UpsertAgentSchema>;
 
+export const AcceptedDatasourceMimeTypes = [
+  'text/csv',
+  'text/plain',
+  'text/markdown',
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+] as const;
+
 export const GenerateUploadLinkRequest = z.object({
   fileName: z.string(),
-  type: z.enum([
-    'text/csv',
-    'text/plain',
-    'text/markdown',
-    'application/pdf',
-    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  ]),
+  type: z.enum(AcceptedDatasourceMimeTypes),
 });
 
 export type GenerateUploadLinkRequest = z.infer<
