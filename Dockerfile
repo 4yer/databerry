@@ -75,7 +75,7 @@ RUN \
     fi
 RUN rm -rf node_modules/.pnpm/canvas@2.11.0
 
-RUN pnpm add -g concurrently
+RUN yarn global add concurrently
 
 USER nextjs
 
