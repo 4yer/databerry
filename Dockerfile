@@ -75,6 +75,8 @@ RUN \
     fi
 RUN rm -rf node_modules/.pnpm/canvas@2.11.0
 
+RUN pnpm add -g concurrently
+
 USER nextjs
 
 EXPOSE 3000
@@ -82,4 +84,5 @@ EXPOSE 3000
 ENV PORT 3000
 
 # CMD ["node", "server.js"]
-CMD ["node", "server.js", "&", "node","server/datasource-loader.js"]
+# CMD ["node", "server.js", "&", "node","server/datasource-loader.js"]
+CMD ["concurrently", "node server.js", "node server/datasource-loader.js"]
