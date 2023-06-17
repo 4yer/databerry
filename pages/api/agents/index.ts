@@ -91,7 +91,6 @@ export const upsertAgent = async (
           id: session?.user?.id,
         },
       },
-      iconUrl: data.iconUrl,
       visibility: data.visibility || AgentVisibility.private,
       tools: {
         createMany: {
@@ -99,8 +98,8 @@ export const upsertAgent = async (
             type: tool.type,
             ...(tool.type === ToolType.datastore
               ? {
-                  datastoreId: tool.id,
-                }
+                datastoreId: tool.id,
+              }
               : {}),
           })),
         },
@@ -114,15 +113,14 @@ export const upsertAgent = async (
       promptType: data.promptType,
       temperature: data.temperature,
       interfaceConfig: data.interfaceConfig || {},
-      iconUrl: data.iconUrl,
       tools: {
         createMany: {
           data: newTools.map((tool) => ({
             type: tool.type,
             ...(tool.type === ToolType.datastore
               ? {
-                  datastoreId: tool.id,
-                }
+                datastoreId: tool.id,
+              }
               : {}),
           })),
         },
