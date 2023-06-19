@@ -1,3 +1,5 @@
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import { Card, Divider, IconButton, Stack, Typography } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import { useColorScheme } from "@mui/joy/styles";
 import { Agent, ConversationChannel } from "@prisma/client";
@@ -11,16 +13,17 @@ import { AgentInterfaceConfig } from "@app/types/models";
 import pickColorBasedOnBgColor from "@app/utils/pick-color-based-on-bgcolor";
 
 const defaultChatBubbleConfig: AgentInterfaceConfig = {
-  // displayName: 'Agent Smith',
+  displayName: "小雀 AI",
   theme: "light",
   // primaryColor: "#000000",
   isBgTransparent: false,
-  initialMessage: "你好，我是小雀智能AI销售",
+  initialMessage: "Hey! 🙂",
   // position: 'right',
   messageTemplates: ["💡 你是谁？", "✨ 上海的新楼盘？"],
 };
 
 const API_URL = process.env.NEXT_PUBLIC_DASHBOARD_URL;
+console.log("API_URL", API_URL);
 
 function ChatBoxFrame(props: { initConfig?: AgentInterfaceConfig }) {
   const router = useRouter();
@@ -45,7 +48,7 @@ function ChatBoxFrame(props: { initConfig?: AgentInterfaceConfig }) {
     return pickColorBasedOnBgColor(
       config.primaryColor || "#ffffff",
       "#ffffff",
-      "#000000"
+      "#cccccc"
     );
   }, [config.primaryColor]);
 
@@ -79,9 +82,9 @@ function ChatBoxFrame(props: { initConfig?: AgentInterfaceConfig }) {
     }
   }, [props.initConfig]);
 
-  //   useEffect(() => {
-  //     setMode(config.theme!);
-  //   }, []);
+  useEffect(() => {
+    setMode(config.theme!);
+  }, []);
 
   if (!agent) {
     return null;
@@ -91,7 +94,7 @@ function ChatBoxFrame(props: { initConfig?: AgentInterfaceConfig }) {
     <Box
       sx={(theme) => ({
         p: 2,
-        position: "relative",
+        position: "fixed",
         width: "100vw",
         height: "100vh",
         maxHeight: "100%",
@@ -103,7 +106,12 @@ function ChatBoxFrame(props: { initConfig?: AgentInterfaceConfig }) {
         "& .message-agent": {
           backgroundColor: config.primaryColor,
           borderColor: config.primaryColor,
-          color: textColor,
+          color: config.primaryColor,
+        },
+        "& .message-human": {
+          backgroundColor: config.primaryColor,
+          borderColor: config.primaryColor,
+          color: config.primaryColor,
         },
       })}
     >
@@ -112,6 +120,7 @@ function ChatBoxFrame(props: { initConfig?: AgentInterfaceConfig }) {
         onSubmit={handleChatSubmit}
         messageTemplates={config.messageTemplates}
         initialMessage={config.initialMessage}
+        displayName={config.displayName}
       />
     </Box>
   );

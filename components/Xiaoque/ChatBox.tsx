@@ -1,12 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import ArrowCircleUpIcon from "@mui/icons-material/ArrowCircleUp";
-import ArrowCircleUpRoundedIcon from '@mui/icons-material/ArrowCircleUpRounded';
+import ArrowCircleUpRoundedIcon from "@mui/icons-material/ArrowCircleUpRounded";
+import DarkMode from "@mui/icons-material/DarkMode";
+import { Divider, Switch, Typography } from "@mui/joy";
 import Button from "@mui/joy/Button";
 import Card from "@mui/joy/Card";
 import CircularProgress from "@mui/joy/CircularProgress";
 import IconButton from "@mui/joy/IconButton";
 import Input from "@mui/joy/Input";
 import Stack from "@mui/joy/Stack";
+import { useColorScheme } from "@mui/joy/styles";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import ReactMarkdown from "react-markdown";
@@ -22,6 +24,7 @@ type Props = {
   onSubmit: (message: string) => Promise<any>;
   messageTemplates?: string[];
   initialMessage?: string;
+  displayName?: string;
   readOnly?: boolean;
 };
 
@@ -32,6 +35,7 @@ function ChatBox({
   onSubmit,
   messageTemplates,
   initialMessage,
+  displayName,
   readOnly,
 }: Props) {
   const scrollableRef = React.useRef<HTMLDivElement>(null);
@@ -39,11 +43,14 @@ function ChatBox({
   const [firstMsg, setFirstMsg] = useState<Message>();
   const [showWelcome, setShowWelcome] = useState(true);
   const [hideTemplateMessages, setHideTemplateMessages] = useState(false);
+  const { mode, setMode } = useColorScheme();
 
   const methods = useForm<z.infer<typeof Schema>>({
     resolver: zodResolver(Schema),
     defaultValues: {},
   });
+
+  const [isChecked, setIsChecked] = useState(mode === "dark");
 
   const submit = async ({ query }: z.infer<typeof Schema>) => {
     try {
@@ -89,6 +96,51 @@ function ChatBox({
         mx: "auto",
       }}
     >
+      {!showWelcome && (
+        <>
+          <Stack direction="row" gap={1} alignItems={"center"}>
+            <div
+              style={{
+                width: "16px",
+                height: "16px",
+                borderRadius: "50%",
+                background: "green",
+              }}
+            />
+            {displayName && (
+              <Typography level="body1">{displayName}</Typography>
+            )}
+
+            {/* <IconButton variant="plain" sx={{ ml: "auto" }} size="sm">
+          <CloseRoundedIcon />
+        </IconButton> */}
+
+            <Switch
+              slotProps={{
+                input: { "aria-label": "Dark mode" },
+                thumb: {
+                  children: <DarkMode />,
+                },
+              }}
+              sx={{
+                "--Switch-thumbSize": "28px",
+                ml: "auto",
+              }}
+              checked={isChecked}
+              onChange={(event) => {
+                setIsChecked(!isChecked);
+                setMode(event.target.checked ? "dark" : "light");
+              }}
+            />
+          </Stack>
+          <Divider
+            sx={{
+              marginX: "-16px",
+            }}
+          />
+        </>
+      )}
+
       {showWelcome && <ChatWelcome />}
       {!showWelcome && (
         <Stack
@@ -116,6 +168,8 @@ function ChatBox({
                 mr: "auto",
                 ml: "none",
                 whiteSpace: "pre-wrap",
+                borderRadius: "16px",
+                px: "12px",
               }}
             >
               {firstMsg?.message}
@@ -134,7 +188,7 @@ function ChatBox({
                 size="sm"
                 variant={"soft"}
                 className={
-                  each.from === "agent" ? "" : ""
+                  each.from === "agent" ? "message-agent" : "message-human"
                 }
                 color={each.from === "agent" ? "primary" : "neutral"}
                 sx={{
@@ -152,6 +206,8 @@ function ChatBox({
                     m: 0,
                   },
                   gap: 2,
+                  borderRadius: "16px",
+                  px: "12px",
                 }}
               >
                 <ReactMarkdown

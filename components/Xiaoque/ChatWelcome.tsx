@@ -1,3 +1,4 @@
+import { Sheet } from "@mui/joy";
 import { motion, useAnimation } from "framer-motion";
 import React, { useEffect, useState } from "react";
 
@@ -28,7 +29,7 @@ const ChatWelcome = () => {
       });
 
       // 第二段动画：小圆点向左移动
-      await circleControls.start({ x: -100 });
+      await circleControls.start({ x: -84 });
 
       // 显示文字并逐字显示
       setShowText(true);
@@ -42,25 +43,27 @@ const ChatWelcome = () => {
   }, [circleControls]);
 
   return (
-    <div
-      style={{
+    <Sheet
+      color="primary"
+      sx={(theme) => ({
+        backgroundColor: theme.palette.background.default,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
         position: "relative",
-      }}
+      })}
     >
       <motion.div
         initial={{ scale: 0, x: 0 }}
         animate={circleControls}
         transition={{ duration: 0.5 }}
         style={{
-          width: "36px",
-          height: "36px",
+          width: "28px",
+          height: "28px",
           borderRadius: "50%",
           position: "absolute",
-          top: "calc(40% - 18px)",
+          top: "calc(40%)",
           background: getRandomColor(), // 随机选择红、黄、蓝颜色
         }}
       />
@@ -74,14 +77,14 @@ const ChatWelcome = () => {
             fontSize: "24px",
             fontWeight: "bold",
             position: "absolute",
-            top: "calc(40% - 18px)",
-            left: "calc(50% - 68px)", // 调整文字与圆点之间的距离
+            top: "calc(40% - 4px)",
+            left: "calc(50% - 60px)", // 调整文字与圆点之间的距离
           }}
         >
           {typedText}
         </motion.h1>
       )}
-    </div>
+    </Sheet>
   );
 };
 

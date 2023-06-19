@@ -12,18 +12,21 @@ import React, { ReactElement } from "react";
 import ChatBoxFrame from "@app/components/Xiaoque/ChatBoxFrame";
 
 export const theme = extendTheme({
-  cssVarPrefix: "databerry-chat-iframe",
+  cssVarPrefix: "xiaoque-chat-iframe",
   colorSchemes: {
     dark: {
       palette: {
         primary: colors.grey,
+        background: {
+          default: "#111",
+        },
       },
     },
     light: {
       palette: {
         primary: colors.blue,
         background: {
-          default: "#FFFFFF",
+          default: "#FFF",
         },
       },
     },
@@ -31,7 +34,7 @@ export const theme = extendTheme({
 });
 
 const cache = createCache({
-  key: "databerry-chat-iframe",
+  key: "xiaoque-chat-iframe",
   prepend: true,
   speedy: true,
 });
@@ -41,11 +44,7 @@ const IframeTheme = (props: any) => {
     <StyledEngineProvider injectFirst>
       <CacheProvider value={cache}>
         <ThemeProvider theme={theme}>
-          <CssVarsProvider
-            theme={theme}
-            defaultMode="light"
-            modeStorageKey="databerry-chat-iframe"
-          >
+          <CssVarsProvider theme={theme} modeStorageKey="xiaoque-chat-iframe">
             {props.children}
           </CssVarsProvider>
         </ThemeProvider>
@@ -55,7 +54,7 @@ const IframeTheme = (props: any) => {
 };
 
 function App() {
-  return <ChatBoxFrame />;
+  return <ChatBoxFrame initConfig={{ theme: "dark" }} />;
 }
 
 App.getLayout = function getLayout(page: ReactElement) {
