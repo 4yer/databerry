@@ -1,20 +1,16 @@
 ### chat
-curl https://api.openai.com/v1/chat/completions   -H "Content-Type: application/json"   -H "Authorization: Bearer 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"   -d '{ "model": "gpt-3.5-turbo",    "messages": [{"role": "user", "content": "Hello!"}]  }'
+curl https://api.openai.com/v1/chat/completions   -H "Content-Type: application/json"   -H "Authorization: Bearer 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"   -d '{ "model": "gpt-3.5-turbo",    "messages": [{"role": "user", "content": "Hello!"}]  }'
 
 
 ### test b6456850.mricode.cc
-curl https://b6456850.mricode.cc/v1/chat/completions   -H "Content-Type: application/json"   -H "Authorization: Bearer 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"   -d '{ "model": "gpt-3.5-turbo",    "messages": [{"role": "user", "content": "Hello!"}]  }'
+curl https://b6456850.mricode.cc/v1/chat/completions   -H "Content-Type: application/json"   -H "Authorization: Bearer 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"   -d '{ "model": "gpt-3.5-turbo",    "messages": [{"role": "user", "content": "Hello!"}]  }'
 
 
 ### test openai-proxy.mricle.workers.dev
-curl https://openai-proxy.mricle.workers.dev/v1/chat/completions   -H "Content-Type: application/json"   -H "Authorization: Bearer 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"   -d '{ "model": "gpt-3.5-turbo",    "messages": [{"role": "user", "content": "Hello!"}]  }'
+curl https://openai-proxy.mricle.workers.dev/v1/chat/completions   -H "Content-Type: application/json"   -H "Authorization: Bearer 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"   -d '{ "model": "gpt-3.5-turbo",    "messages": [{"role": "user", "content": "Hello!"}]  }'
 
 
 
 ### embeddings
 curl https://api.openai.com/v1/embeddings -H "Authorization: Bearer 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" -d '{"model":"text-embedding-ada-002","input":["你是谁"]}' -H "Content-Type: application/json"
-
-### 123
-#curl https://chat-gpt-next-web-rosy-omega-63.vercel.app/api/openai/v1/embeddings -H "Authorization: Bearer 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" -d '{"model":"text-embedding-ada-002","input":["你是谁"]}' -H "Content-Type: application/json"
-
 

@@ -29,6 +29,6 @@ jobs:
           IMAGE_TAG: 'dev' # ${{ github.sha }}镜像版本,这里是使用代码commitid sha值， 用户可以修改成自己需要的。
           IMAGE_NAME: ${{ env.IMAGE_NAME }}
         run: |
-          docker build -f $DOCKER_FILE -t $SWR_REGISTRY/$SWR_ORGANIZATION/$IMAGE_NAME:$IMAGE_TAG .
+          docker build --build-arg NEXT_PUBLIC_DASHBOARD_URL=http://ai.xiaoque.cc  -f $DOCKER_FILE -t $SWR_REGISTRY/$SWR_ORGANIZATION/$IMAGE_NAME:$IMAGE_TAG .
           docker push $SWR_REGISTRY/$SWR_ORGANIZATION/$IMAGE_NAME:$IMAGE_TAG
           echo "::set-output name=image::$SWR_REGISTRY/$SWR_ORGANIZATION/$IMAGE_NAME:$IMAGE_TAG"
