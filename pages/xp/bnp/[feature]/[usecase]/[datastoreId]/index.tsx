@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import AddIcon from '@mui/icons-material/Add';
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import AutoGraphRoundedIcon from '@mui/icons-material/AutoGraphRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
@@ -22,6 +23,8 @@ import Chip from '@mui/joy/Chip';
 import Divider from '@mui/joy/Divider';
 import FormControl from '@mui/joy/FormControl';
 import ListItemDecorator from '@mui/joy/ListItemDecorator';
+import Radio from '@mui/joy/Radio';
+import RadioGroup from '@mui/joy/RadioGroup';
 import Tab from '@mui/joy/Tab';
 import TabList from '@mui/joy/TabList';
 import Tabs from '@mui/joy/Tabs';
@@ -42,7 +45,7 @@ import { useForm } from 'react-hook-form';
 import useSWR from 'swr';
 import { z } from 'zod';
 
-import ChatBox from '@app/components/ChatBox';
+import ChatBoxBNP from '@app/components/ChatBoxBNP';
 import CreateDatastoreModal from '@app/components/CreateDatastoreModal';
 import Layout from '@app/components/Layout';
 import UsageLimitModal from '@app/components/UsageLimitModal';
@@ -90,6 +93,7 @@ const EvalModal = (props: {
   feature: string;
   prompt: string;
   promptType: string;
+  datastoreId: string;
 }) => {
   const [state, setState] = useStateReducer({
     isLoading: false,
@@ -118,12 +122,19 @@ const EvalModal = (props: {
 
     await axios.post(`/api/xp/bnp/eval`, payload);
 
+    await axios.delete(`/api/xp/bnp/history`),
+      {
+        datastoreId: props.datastoreId,
+      };
+
+    props?.handleClose();
+    methods?.reset();
+
     setState({
       isLoading: false,
     });
 
-    props?.handleClose();
-    methods?.reset();
+    window.location.reload();
   };
 
   console.log('methods', methods.formState.errors);
@@ -211,11 +222,38 @@ const EvalModal = (props: {
   );
 };
 
-const SearchBNP = (props: { datastoreId: string }) => {
+const prompts = {
+  writing: {
+    libre: [],
+    auto: ['Ecrit un poème comme molière sur databerry'],
+    assisté: [
+      'Rédige un résumé de ... lignes sans aucun exemple du document ...',
+      'Rédige un résumé de ... du document ... Avec à la fin une réflexion sur un des sujets abordés',
+    ],
+  },
+  qa: {
+    libre: [],
+    auto: [],
+    assisté: [],
+  },
+  summary: {
+    libre: [],
+    auto: ['Ecrit un poème comme molière sur databerry'],
+    assisté: [
+      'Rédige un résumé de ... lignes sans aucun exemple du document ...',
+      'Rédige un résumé de ... du document ... Avec à la fin une réflexion sur un des sujets abordés',
+    ],
+  },
+};
+
+const SearchBNP = (props: {
+  datastoreId: string;
+  feature: 'writing' | 'qa' | 'summary';
+}) => {
   const router = useRouter();
   const [state, setState] = useStateReducer({
     isEvalModalOpen: false,
-    promptType: 'libre',
+    promptType: undefined as 'libre' | 'auto' | 'assisté' | undefined,
     prompt: '',
   });
   const { history, handleChatSubmit } = useAgentChat({
@@ -227,26 +265,36 @@ const SearchBNP = (props: { datastoreId: string }) => {
     },
   });
 
+  React.useEffect(() => {
+    if (state.prompt) {
+    }
+  }, [state.prompt]);
+
   return (
     <>
       <Stack>
-        {history.length > 0 && (
-          <Stack direction="row">
-            <Button
-              sx={{ mr: 'auto' }}
-              color="warning"
-              variant="outlined"
-              onClick={async () => {
-                await axios.delete(`/api/xp/bnp/history`),
-                  {
-                    datastoreId: props.datastoreId,
-                  };
+        {state.promptType && (
+          <Chip sx={{ mr: 'auto' }} variant="outlined" color="neutral">
+            Type de prompt: <strong>{state.promptType}</strong>
+          </Chip>
+        )}
+        <Stack direction="row">
+          {/* <Button
+            sx={{ mr: 'auto' }}
+            color="warning"
+            variant="outlined"
+            onClick={async () => {
+              await axios.delete(`/api/xp/bnp/history`),
+                {
+                  datastoreId: props.datastoreId,
+                };
 
-                window.location.reload();
-              }}
-            >
-              Effacer messages
-            </Button>
+              window.location.reload();
+            }}
+          >
+            Reset Prompt
+          </Button> */}
+          {history.length > 0 && (
             <Button
               sx={{ ml: 'auto' }}
               onClick={() => {
@@ -255,8 +303,8 @@ const SearchBNP = (props: { datastoreId: string }) => {
             >
               Evaluer
             </Button>
-          </Stack>
-        )}
+          )}
+        </Stack>
 
         <Box
           sx={{
@@ -264,17 +312,21 @@ const SearchBNP = (props: { datastoreId: string }) => {
             maxHeight: '680px',
           }}
         >
-          <ChatBox
+          <ChatBoxBNP
+            promptType={state.promptType}
+            prompt={state.prompt}
             messages={history}
             onSubmit={handleChatSubmit}
+            multiline
             // messageTemplates={config.messageTemplates}
             // initialMessage={config.initialMessage}
           />
         </Box>
       </Stack>
       <EvalModal
+        datastoreId={props.datastoreId}
         prompt={state.prompt}
-        promptType={state.promptType}
+        promptType={state.promptType!}
         feature={router.query.feature as string}
         useCase={router.query.usecase as string}
         isOpen={state.isEvalModalOpen}
@@ -283,6 +335,100 @@ const SearchBNP = (props: { datastoreId: string }) => {
           ?.map((each) => `${each.from}: ${each.message}`)
           .join('\n')}
       />
+
+      <Modal
+        onClose={() =>
+          setState({
+            promptType: undefined,
+            prompt: '',
+          })
+        }
+        open={!state.promptType}
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          py: 2,
+        }}
+      >
+        <Sheet
+          variant="outlined"
+          sx={{
+            width: 600,
+            maxWidth: '100%',
+            height: '100%',
+            overflowY: 'scroll',
+
+            borderRadius: 'md',
+            p: 3,
+            boxShadow: 'lg',
+          }}
+        >
+          <Button
+            color="warning"
+            startDecorator={<ArrowBackRoundedIcon />}
+            onClick={() => router.push('/xp/bnp')}
+          >
+            Nouvel Usage
+          </Button>
+
+          <Divider sx={{ my: 4 }}></Divider>
+
+          <Typography mb={4} level="h5">
+            Type de Prompt
+          </Typography>
+          <Stack>
+            <RadioGroup
+              defaultValue="medium"
+              name="radio-buttons-group"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                const value = e.target.value;
+                const type = value?.split('_')?.[0];
+                const index = value?.split('_')?.[1];
+
+                const prompt =
+                  (prompts as any)?.[props.feature]?.[type]?.[index || 0] || '';
+
+                setState({
+                  promptType: type as any,
+                  prompt,
+                });
+              }}
+            >
+              <Stack gap={2}>
+                {['writing', 'summary'].includes(props.feature) && (
+                  <>
+                    <Radio value="auto" label="Auto" size="lg" />
+                    <Divider></Divider>
+                  </>
+                )}
+
+                {['writing', 'summary'].includes(props.feature) && (
+                  <>
+                    <Typography>Assisté</Typography>
+                    <Stack gap={1}>
+                      {prompts[props.feature]['assisté'].map((each, index) => (
+                        <Radio
+                          key={index}
+                          value={`assisté_${index}`}
+                          label={each}
+                          size="lg"
+                        />
+                      ))}
+                    </Stack>
+
+                    <Divider></Divider>
+                  </>
+                )}
+
+                {['qa', 'writing', 'summary'].includes(props.feature) && (
+                  <Radio value="libre" label="Libre" size="lg" />
+                )}
+              </Stack>
+            </RadioGroup>
+          </Stack>
+        </Sheet>
+      </Modal>
     </>
   );
 };
@@ -307,8 +453,6 @@ export default function XPBNPFeature() {
   const getDatastoreQuery = useSWR<
     Prisma.PromiseReturnType<typeof getDatastore>
   >(`/api/datastores/${datastoreId}`, fetcher);
-
-  React.useEffect(() => {}, []);
 
   return (
     <Box
@@ -355,7 +499,7 @@ export default function XPBNPFeature() {
           sx={{ p: 4, maxWidth: 'lg', minHeight: '500px', overflow: 'visible' }}
           variant="outlined"
         >
-          {feature === 'qa' && <SearchBNP datastoreId={datastoreId} />}
+          {feature && <SearchBNP feature={feature} datastoreId={datastoreId} />}
         </Card>
       </Stack>
     </Box>
