@@ -19,7 +19,7 @@ const defaultChatBubbleConfig: AgentInterfaceConfig = {
   isBgTransparent: false,
   initialMessage: "Hey! 🙂",
   // position: 'right',
-  messageTemplates: ["💡你是谁？", "✨海上明珠城", "✨元江雅苑"],
+  messageTemplates: ["你是谁？", "海上明珠城", "元江雅苑价格"],
 };
 
 const API_URL = process.env.NEXT_PUBLIC_DASHBOARD_URL;
