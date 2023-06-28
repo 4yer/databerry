@@ -1,11 +1,10 @@
 #!/bin/bash
 
-cd /app/workspace
 
-pwd
-ls
+cd /home/node
+echo "###### INITIALIZING PROJECT"
 
-yarn global add pnpm@7 && pnpm i
+pnpm i 
 
 pnpm prisma:migrate:dev
 

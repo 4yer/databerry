@@ -48,3 +48,8 @@ packages/chat-bubble/chat-bubble*
 
 .dev/databerry/app.env
 .http
+.config
+.cache
+.npm
+.yarn
+.local
